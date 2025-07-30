@@ -34,12 +34,12 @@ describe("Example.com Title Test", function () {
     expect(title).to.equal("Example Domain");
   });
 
-//   it("should load example.com and check the title3", async () => {
-//     console.log("Running forth test...");
-//     await driver.get("https://example.com");
-//     const title = await driver.getTitle();
-//     expect(title).to.equal("Example Domain");
-//   });
+  it("should load example.com and check the title3", async () => {
+    console.log("Running forth test...");
+    await driver.get("https://example.com");
+    const title = await driver.getTitle();
+    expect(title).to.equal("Example Domain");
+  });
 
 //   it("should load example.com and check the title4", async () => {
 //     console.log("Running fifth test...");
