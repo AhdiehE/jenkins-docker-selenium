@@ -50,10 +50,10 @@ pipeline {
     post {
         always {
             script {
-                // Safely run docker-compose down from the host
-                sh '''
-                    docker-compose down || true
-                '''
+                // Adding node block because sh needs a workspace (hudson.FilePath) to run in, which is only available inside a node {} block
+                node {
+                    sh 'docker-compose down'
+                }
             }
         }
     }
