@@ -8,7 +8,14 @@ pipeline {
                 git url: 'https://github.com/AhdiehE/jenkins-docker-selenium.git', branch: 'main'
             }
         }
-
+        stage('Configure Git') {
+            steps {
+                sh '''
+                    git config --global user.name "AhdiehE"
+                    git config --global user.email "emadi.ahdieh@gmail.com"
+                '''
+            }
+        }
         stage('Test with Docker') {
             agent {
                 docker {
