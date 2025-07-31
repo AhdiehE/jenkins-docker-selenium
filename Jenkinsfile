@@ -11,8 +11,8 @@ pipeline {
         stage('Configure Git') {
             steps {
                 sh '''
-                    git config --global user.name "AhdiehE"
-                    git config --global user.email "emadi.ahdieh@gmail.com"
+                    git config  user.name "AhdiehE"
+                    git config  user.email "emadi.ahdieh@gmail.com"
                 '''
             }
         }
