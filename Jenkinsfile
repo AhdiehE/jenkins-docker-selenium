@@ -24,7 +24,9 @@ pipeline {
     }
     post {
         always {
-            sh 'docker-compose down'
+            node {
+                sh 'docker-compose down'
+            }
         }
     }
 }
