@@ -1,25 +1,22 @@
 pipeline {
     agent {
         docker {
-            image 'node:18-alpine'
+            image 'docker/compose:latest'
             args '-v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:$WORKSPACE -w $WORKSPACE'
         }
     }
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the Git repo configured in your Pipeline project
-                checkout scm
+                git url: 'https://github.com/AhdiehE/jenkins-docker-selenium.git', branch: 'main'
             }
         }
         stage('Configure Git') {
             steps {
-                dir("${env.WORKSPACE}") {
-                    sh '''
-                        git config user.name "AhdiehE"
-                        git config user.email "emadi.ahdieh@gmail.com"
-                    '''
-                }
+                sh '''
+                  git config user.name "AhdiehE"
+                  git config user.email "emadi.ahdieh@gmail.com"
+                '''
             }
         }
         stage('Build') {
@@ -27,7 +24,6 @@ pipeline {
                 sh 'docker-compose build'
             }
         }
-
         stage('Run Tests') {
             steps {
                 sh 'docker-compose up --abort-on-container-exit --exit-code-from test-runner'
@@ -36,6 +32,7 @@ pipeline {
     }
     post {
         always {
+            // Use 'script' to run imperative code
             script {
                 // Adding node block because sh needs a workspace (hudson.FilePath) to run in, which is only available inside a node {} block
                 node {
