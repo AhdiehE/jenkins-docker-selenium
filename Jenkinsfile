@@ -1,52 +1,39 @@
 pipeline {
-    agent any
-
+    agent {
+        docker {
+            image 'node:18-alpine'
+            args '-v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:$WORKSPACE -w $WORKSPACE'
+        }
+    }
     stages {
         stage('Checkout') {
             steps {
-                // Clone repo before using a docker agent
-                git url: 'https://github.com/AhdiehE/jenkins-docker-selenium.git', branch: 'main'
+                // Checkout the Git repo configured in your Pipeline project
+                checkout scm
             }
         }
         stage('Configure Git') {
             steps {
-                sh '''
-                    git config  user.name "AhdiehE"
-                    git config  user.email "emadi.ahdieh@gmail.com"
-                '''
+                dir("${env.WORKSPACE}") {
+                    sh '''
+                        git config user.name "AhdiehE"
+                        git config user.email "emadi.ahdieh@gmail.com"
+                    '''
+                }
             }
         }
-        stage('Test with Docker') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    args '-v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:$WORKSPACE -w $WORKSPACE'
-                }
+        stage('Build') {
+            steps {
+                sh 'docker-compose build'
             }
-            stages {
-                stage('Install Tools') {
-                    steps {
-                        sh '''
-                            apk add --no-cache git docker-cli docker-compose
-                        '''
-                    }
-                }
+        }
 
-                stage('Build') {
-                    steps {
-                        sh 'docker-compose build'
-                    }
-                }
-
-                stage('Run Tests') {
-                    steps {
-                        sh 'docker-compose up --abort-on-container-exit --exit-code-from test-runner'
-                    }
-                }
+        stage('Run Tests') {
+            steps {
+                sh 'docker-compose up --abort-on-container-exit --exit-code-from test-runner'
             }
         }
     }
-
     post {
         always {
             script {
