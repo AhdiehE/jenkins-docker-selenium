@@ -24,8 +24,12 @@ pipeline {
     }
     post {
         always {
-            node {
-                sh 'docker-compose down'
+            // Use 'script' to run imperative code
+            script {
+                // Adding node block because sh needs a workspace (hudson.FilePath) to run in, which is only available inside a node {} block
+                node {
+                    sh 'docker-compose down'
+                }
             }
         }
     }
