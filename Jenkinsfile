@@ -11,6 +11,14 @@ pipeline {
                 git url: 'https://github.com/AhdiehE/jenkins-docker-selenium.git', branch: 'main'
             }
         }
+        stage('Configure Git') {
+            steps {
+                sh '''
+                  git config user.name "AhdiehE"
+                  git config user.email "emadi.ahdieh@gmail.com"
+                '''
+            }
+        }
         stage('Build') {
             steps {
                 sh 'docker-compose build'
