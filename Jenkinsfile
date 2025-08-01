@@ -1,25 +1,37 @@
 pipeline {
     agent {
         docker {
-            image 'docker/compose:latest'
+            image 'node:20-alpine'
             args '-v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:$WORKSPACE -w $WORKSPACE'
         }
     }
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/AhdiehE/jenkins-docker-selenium.git', branch: 'main'
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[
+                        url: 'git@github.com:AhdiehE/jenkins-docker-selenium.git',
+                        credentialsId: 'github-ssh-key'
+                    ]]
+                ])
             }
         }
         stage('Configure Git') {
             steps {
                 sh '''
-                  git config user.name "AhdiehE"
-                  git config user.email "emadi.ahdieh@gmail.com"
+                    git config --global user.name "AhdiehE"
+                    git config --global user.email "emadi.ahdieh@gmail.com"
                 '''
             }
         }
-        stage('Build') {
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+        stage('Build Docker Images') {
             steps {
                 sh 'docker-compose build'
             }
@@ -32,13 +44,7 @@ pipeline {
     }
     post {
         always {
-            // Use 'script' to run imperative code
-            script {
-                // Adding node block because sh needs a workspace (hudson.FilePath) to run in, which is only available inside a node {} block
-                node {
-                    sh 'docker-compose down'
-                }
-            }
+            sh 'docker-compose down'
         }
     }
 }

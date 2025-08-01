@@ -1,4 +1,4 @@
-version: "3"
+version: "3.8"
 
 services:
   selenium-hub:
@@ -23,7 +23,6 @@ services:
       - selenium-hub
       - chrome
     volumes:
-      - /c/CLIENTS/Projects/selenium-js-docker-jenkins:/usr/src/app
+      - .:/usr/src/app
     working_dir: /usr/src/app
-    command: sh -c "tail -f /dev/null"
-
+    command: ["npm", "test"]
