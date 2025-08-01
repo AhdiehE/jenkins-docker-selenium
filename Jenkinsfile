@@ -13,7 +13,7 @@ pipeline {
                     branches: [[name: '*/main']],
                     userRemoteConfigs: [[
                         url: 'git@github.com:AhdiehE/jenkins-docker-selenium.git',
-                        credentialsId: 'github-ssh-key'
+                        credentialsId: 'github-ssh'
                     ]]
                 ])
             }
