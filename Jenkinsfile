@@ -1,21 +1,16 @@
 pipeline {
     agent {
         docker {
-            image 'node:20-alpine'
+            image 'node-docker:latest'
             args '-v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:$WORKSPACE -w $WORKSPACE'
         }
     }
     stages {
         stage('Checkout') {
-            steps {
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: '*/main']],
-                    userRemoteConfigs: [[
-                        url: 'git@github.com:AhdiehE/jenkins-docker-selenium.git',
-                        credentialsId: 'github-ssh'
-                    ]]
-                ])
+        steps {
+            git credentialsId: 'github-https', // Your Jenkins HTTPS credential ID
+                url: 'https://github.com/AhdiehE/jenkins-docker-selenium.git',
+                branch: 'main'
             }
         }
         stage('Configure Git') {
@@ -31,6 +26,11 @@ pipeline {
                 sh 'npm install'
             }
         }
+        stage('Test Docker') {
+            steps {
+                sh 'docker ps'
+            }
+        }
         stage('Build Docker Images') {
             steps {
                 sh 'docker-compose build'
@@ -41,6 +41,11 @@ pipeline {
                 sh 'docker-compose up --abort-on-container-exit --exit-code-from test-runner'
             }
         }
+        stage('Debug') {
+            steps {
+                sh 'node -v && npm -v'
+            }
+        }   
     }
     post {
         always {
