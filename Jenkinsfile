@@ -49,7 +49,11 @@ pipeline {
     }
     post {
         always {
-            sh 'docker-compose down'
+          script {
+            node {
+              sh 'echo "Cleaning up..."'
+            }
+          }
         }
     }
 }
