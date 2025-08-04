@@ -1,10 +1,16 @@
 pipeline {
     agent {
         docker {
-            image 'node-docker:latest'
-            args '-v /var/run/docker.sock:/var/run/docker.sock -v $WORKSPACE:$WORKSPACE -w $WORKSPACE'
+            image 'jenkins-docker-test'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
+
+    environment {
+        GIT_COMMITTER_NAME = "AhdiehE"
+        GIT_COMMITTER_EMAIL = "emadi.ahdieh@gmail.com"
+    }
+
     stages {
         stage('Checkout') {
         steps {
@@ -13,22 +19,14 @@ pipeline {
                 branch: 'main'
             }
         }
-        stage('Configure Git') {
-            steps {
-                sh '''
-                    git config --global user.name "AhdiehE"
-                    git config --global user.email "emadi.ahdieh@gmail.com"
-                '''
-            }
-        }
         stage('Install Dependencies') {
             steps {
                 sh 'npm install'
             }
         }
-        stage('Test Docker') {
+        stage('Docker Info') {
             steps {
-                sh 'docker ps'
+                sh 'docker --version && docker ps'
             }
         }
         stage('Build Docker Images') {
@@ -41,7 +39,7 @@ pipeline {
                 sh 'docker-compose up --abort-on-container-exit --exit-code-from test-runner'
             }
         }
-        stage('Debug') {
+        stage('Debug Node/NPM') {
             steps {
                 sh 'node -v && npm -v'
             }
@@ -49,11 +47,7 @@ pipeline {
     }
     post {
         always {
-          script {
-            node {
-              sh 'echo "Cleaning up..."'
-            }
-          }
+          echo '✅ Pipeline completed. Cleaning up...'
         }
     }
 }

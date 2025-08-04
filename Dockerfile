@@ -1,24 +1,34 @@
-# Dockerfile
-FROM node:20-alpine
+# Use Jenkins LTS base image (Debian-based)
+FROM jenkins/jenkins:lts
 
-# Install dependencies
-RUN apk add --no-cache \
-    docker-cli \
+USER root
+
+# Install dependencies: Docker CLI, Compose, Git, Bash, Node.js, NPM
+RUN apt-get update && \
+    apt-get install -y \
+    docker.io \
     docker-compose \
     git \
-    bash
+    curl \
+    bash && \
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    usermod -aG docker jenkins && \
+    apt-get clean
+
+USER jenkins
 
 # Set working directory
 WORKDIR /usr/src/app
 
-# Copy only package.json and package-lock.json first for layer caching
-COPY package*.json ./
+# Copy package.json for caching
+COPY --chown=jenkins:jenkins package*.json ./
 
-# Install NPM dependencies early (faster rebuilds)
+# Install NPM dependencies
 RUN npm install
 
-# Now copy the rest of the app
-COPY . .
+# Copy rest of the source code
+COPY --chown=jenkins:jenkins . .
 
-# Default command for running tests
+# Default command
 CMD ["npm", "test"]
