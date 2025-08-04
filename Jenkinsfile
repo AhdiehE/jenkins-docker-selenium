@@ -1,8 +1,9 @@
 pipeline {
     agent {
         docker {
-            image 'jenkins-agent'
+            label '' // Remove default label to avoid restrictions
             args '-v /var/run/docker.sock:/var/run/docker.sock'
+            reuseNode true
         }
     }
 
@@ -12,7 +13,21 @@ pipeline {
     }
 
     stages {
+        stage('Build Jenkins Agent Image') {
+            steps {
+                script {
+                    docker.build('jenkins-agent', '-f Dockerfile.jenkins-agent .')
+                }
+            }
+        }
+
         stage('Test Docker Access') {
+            agent {
+                docker {
+                    image 'jenkins-agent'
+                    args '-v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
             steps {
                 sh 'docker version && docker ps'
             }
