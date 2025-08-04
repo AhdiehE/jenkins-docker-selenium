@@ -12,47 +12,52 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-          steps {
-            git credentialsId: 'github-https', // Your Jenkins HTTPS credential ID
-              url: 'https://github.com/AhdiehE/jenkins-docker-selenium.git',
-              branch: 'main'
-            }
-          }
-        stage('Install Dependencies') {
-          steps {
-            sh 'npm install'
+      stage('Test Docker') {
+        steps {
+          sh 'docker ps'  // Should work if docker CLI and socket are present
+        }
+      }
+      stage('Checkout') {
+        steps {
+          git credentialsId: 'github-https', // Your Jenkins HTTPS credential ID
+            url: 'https://github.com/AhdiehE/jenkins-docker-selenium.git',
+            branch: 'main'
           }
         }
-        stage('Docker Info') {
-          steps {
-            sh 'docker --version && docker ps'
-          }
+      stage('Install Dependencies') {
+        steps {
+          sh 'npm install'
         }
-        stage('Build Docker Images') {
-          steps {
-            sh 'docker-compose build'
-          }
+      }
+      stage('Docker Info') {
+        steps {
+          sh 'docker --version && docker ps'
         }
-        stage('Run Tests') {
-          steps {
-            sh 'docker-compose up --abort-on-container-exit --exit-code-from test-runner'
-          }
+      }
+      stage('Build Docker Images') {
+        steps {
+          sh 'docker-compose build'
         }
-        stage('Check Docker Socket') {
-          steps {
-            sh '''
-              echo "Checking Docker socket..."
-              ls -l /var/run/docker.sock
-              docker version
-            '''
-          }
+      }
+      stage('Run Tests') {
+        steps {
+          sh 'docker-compose up --abort-on-container-exit --exit-code-from test-runner'
         }
-        stage('Debug Node/NPM') {
-          steps {
-            sh 'node -v && npm -v'
-          }
-        }   
+      }
+      stage('Check Docker Socket') {
+        steps {
+          sh '''
+            echo "Checking Docker socket..."
+            ls -l /var/run/docker.sock
+            docker version
+          '''
+        }
+      }
+      stage('Debug Node/NPM') {
+        steps {
+          sh 'node -v && npm -v'
+        }
+      }   
     }
     post {
       always {
