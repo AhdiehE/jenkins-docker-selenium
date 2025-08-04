@@ -1,11 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            label '' // Remove default label to avoid restrictions
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
-            reuseNode true
-        }
-    }
+    agent any  // Use a Jenkins node that can build Docker images
 
     environment {
         GIT_COMMITTER_NAME = "AhdiehE"
