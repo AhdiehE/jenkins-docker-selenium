@@ -1,6 +1,6 @@
 import { Builder, By } from "selenium-webdriver";
 import { expect } from "chai";
-import chrome from "selenium-webdriver/chrome";
+import chrome from "selenium-webdriver/chrome.js";
 import fs from "fs";
 import os from "os";
 import path from "path";
