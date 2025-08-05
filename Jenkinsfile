@@ -14,13 +14,13 @@ pipeline {
                 sh 'npm ci'
             }
         }
-        stage ('Use DEVICE_JSON') {
-            steps {
-                configFileProvider([configFile(fileId: '61506ee5-f1c2-415b-916d-2c2d0657048c', targetLocation: 'utility/device.json')]) {
-                    sh 'cat utility/device.json'
-                }
-            }
-        }
+        // stage ('Use DEVICE_JSON') {
+        //     steps {
+        //         configFileProvider([configFile(fileId: '61506ee5-f1c2-415b-916d-2c2d0657048c', targetLocation: 'utility/device.json')]) {
+        //             sh 'cat utility/device.json'
+        //         }
+        //     }
+        // }
         stage ('Test') {
             steps {
                 lock('build-lock') {
