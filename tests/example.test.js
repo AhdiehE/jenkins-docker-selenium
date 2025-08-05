@@ -49,6 +49,6 @@ describe("Example.com Title Test", function () {
   //   });
 
   this.afterAll(async () => {
-    if (driver) await driver.quit();
+    if (driver) await driver.close();
   });
 });
