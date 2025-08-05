@@ -30,9 +30,9 @@ pipeline {
             }
         }
     }
-    post {
+    // post {
         // success { gerritReview labels: ['Code-Review': 1] }
         // unstable { gerritReview labels: ['Code-Review': 0], message: 'Build is unstable' }
         // failure { gerritReview labels: ['Code-Review': -1], message: 'Sanity check failed' }
-    }
+    // }
 }
